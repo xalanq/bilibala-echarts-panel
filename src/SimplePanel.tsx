@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { PanelProps, GrafanaTheme } from '@grafana/data';
 import { withTheme } from '@grafana/ui';
 import { debounce } from 'lodash';
-import echarts from 'echarts';
+import * as echarts from 'echarts';
 import { css, cx } from 'emotion';
 import { SimpleOptions, funcParams } from 'types';
 
@@ -10,6 +10,7 @@ import { SimpleOptions, funcParams } from 'types';
 import 'echarts-wordcloud';
 import 'echarts-liquidfill';
 import 'echarts-gl';
+import * as ecStat from 'echarts-stat';
 
 // auto register map
 const maps = (require as any).context('./map', false, /\.json/);
@@ -44,7 +45,8 @@ interface Props extends PanelProps<SimpleOptions> {
   theme: GrafanaTheme;
 }
 
-const PartialSimplePanel: React.FC<Props> = ({ options, data, width, height, theme }) => {
+const PartialSimplePanel: React.FC<Props> = (props) => {
+  let { options, data, width, height, theme } = props;
   const styles = getStyles();
   const echartRef = useRef<HTMLDivElement>(null);
   const [chart, setChart] = useState<echarts.ECharts>();
@@ -62,7 +64,7 @@ const PartialSimplePanel: React.FC<Props> = ({ options, data, width, height, the
         setTips(undefined);
         chart.clear();
         let getOption = new Function(funcParams, options.getOption);
-        const o = getOption(data, theme, chart, echarts);
+        const o = getOption(data, theme, props, chart, echarts, ecStat);
         o && chart.setOption(o);
       } catch (err) {
         console.error('Editor content error!', err);
@@ -102,8 +104,8 @@ const PartialSimplePanel: React.FC<Props> = ({ options, data, width, height, the
       {tips && (
         <div className={styles.tips}>
           <h5 className={styles.tipsTitle}>Editor content error!</h5>
-          {(tips.stack || tips.message).split('\n').map(s => (
-            <p>{s}</p>
+          {(tips.stack || tips.message).split('\n').map((s) => (
+            <p key={s}>{s}</p>
           ))}
         </div>
       )}

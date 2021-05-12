@@ -23,7 +23,7 @@ Support [echarts-wordcloud](https://github.com/ecomfe/echarts-wordcloud), [echar
 
 1. Echarts option in the edit panel will execute when the data from grafana is refreshed, so you should avoid side effects or ensure that the side effects of the last execution can be cleared.
 ```
-function (data, theme, echartsInstance, echarts) {
+function (data, theme, props, echartsInstance, echarts) {
   echartsInstance.off('click') // clear side effects
   echartsInstance.on('click', () => {
     console.log('Click!');
